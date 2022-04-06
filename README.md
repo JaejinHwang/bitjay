@@ -1,0 +1,2 @@
+# bitjay
+ Cryptotracker w/ typescript
