@@ -53,10 +53,11 @@ const GlobalStyle = createGlobalStyle`
     font-family: 'Poppins', sans-serif;
   }
   *{
-    box-sizing: boder-box;
+    box-sizing: border-box;
   }
   a{
     text-decoration: none;
+    color: inherit;
   }
 
 `;
