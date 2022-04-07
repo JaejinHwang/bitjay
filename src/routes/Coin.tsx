@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import {
   Link,
   Route,
@@ -8,6 +9,7 @@ import {
   useParams,
 } from "react-router-dom";
 import styled from "styled-components";
+import { fetchCoinInfo, fetchCoinTickers } from "./api";
 import Chart from "./Chart";
 import Price from "./Price";
 
@@ -36,6 +38,8 @@ const DashBoard = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  // display: grid;
+  // grid-template-columns: repeat(auto-fill, minmax(100px, auto));
   gap: 20px;
 `;
 
@@ -101,11 +105,11 @@ const PickerItem = styled.div<{ isActive: boolean }>`
   }
 `;
 
-interface StateInterface {
+interface IState {
   name: string;
 }
 
-interface InfoInterface {
+interface ICoinInfo {
   id: string;
   name: string;
   symbol: string;
@@ -131,7 +135,7 @@ interface InfoInterface {
   last_data_at: string;
 }
 
-interface PriceInterface {
+interface ICoinTickers {
   id: string;
   name: string;
   symbol: string;
@@ -166,31 +170,18 @@ interface PriceInterface {
 }
 
 const Coin = () => {
-  const [loading, setLoading] = useState(true);
   const location = useLocation();
   const { coinId } = useParams();
-  const state = location.state as StateInterface;
-  const [info, setInfo] = useState<InfoInterface>();
-  const [price, setPrice] = useState<PriceInterface>();
+  const state = location.state as IState;
   const priceMatch = useMatch("/:coinId/price");
   const chartMatch = useMatch("/:coinId/chart");
-  useEffect(() => {
-    (async () => {
-      const infoData = await (
-        await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
-      ).json();
-      const priceData = await (
-        await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
-      ).json();
-      setInfo(infoData);
-      setPrice(priceData);
-      setLoading(false);
-    })();
-  }, [coinId]);
+  const {isLoading: infoLoading, data: infoData} = useQuery<ICoinInfo>([coinId, "info"], ()=>fetchCoinInfo(coinId!));
+  const {isLoading: tickersLoading, data: tickersData} = useQuery<ICoinTickers>([coinId, "tickers"], ()=>fetchCoinTickers(coinId!));
+  const loading = infoLoading || tickersLoading;
   return (
     <Container>
       <Title>
-        {state?.name ? state.name : loading ? "Loading..." : info?.name}
+        {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
       </Title>
       {loading ? (
         "Loading..."
@@ -199,26 +190,26 @@ const Coin = () => {
           <DashBoard>
             <DashBoardItem>
               <span>RANK</span>
-              <span>{info?.rank}</span>
+              <span>{infoData?.rank}</span>
             </DashBoardItem>
             <DashBoardItem>
               <span>SYMBOL</span>
-              <span>{info?.symbol}</span>
+              <span>{infoData?.symbol}</span>
             </DashBoardItem>
             <DashBoardItem
-              positive={info?.is_active === true}
-              negative={info?.is_active !== true}
+              positive={infoData?.is_active === true}
+              negative={infoData?.is_active !== true}
             >
               <span>STATUS</span>
-              <span>{info?.is_active ? "ACTIVE" : "INACTIVE"}</span>
+              <span>{infoData?.is_active ? "ACTIVE" : "INACTIVE"}</span>
             </DashBoardItem>
             <DashBoardItem>
               <span>SINCE</span>
               <span>
-                {info?.started_at ? (
+                {infoData?.started_at ? (
                   <>
-                    {info?.started_at?.split("-")[0]}.
-                    {info?.started_at?.split("-")[1]}.
+                    {infoData?.started_at?.split("-")[0]}.
+                    {infoData?.started_at?.split("-")[1]}.
                   </>
                 ) : (
                   "UKN"
@@ -230,8 +221,8 @@ const Coin = () => {
             <DashBoardItem>
               <span>DESCRIPTION</span>
               <span>
-                {info?.description
-                  ? info?.description
+                {infoData?.description
+                  ? infoData?.description
                   : "There is no description about this coin."}
               </span>
             </DashBoardItem>
@@ -239,15 +230,15 @@ const Coin = () => {
           <DashBoard>
             <DashBoardItem>
               <span>TOTAL SUPPLY</span>
-              <span>{price?.total_supply}</span>
+              <span>{tickersData?.total_supply}</span>
             </DashBoardItem>
-            <DashBoardItem>
+            {/* <DashBoardItem>
               <span>MAX SUPPLY</span>
-              <span>{price?.max_supply}</span>
-            </DashBoardItem>
+              <span>{tickersData?.max_supply}</span>
+            </DashBoardItem> */}
             <DashBoardItem>
               <span>CIRCULATING</span>
-              <span>{price?.circulating_supply}</span>
+              <span>{tickersData?.circulating_supply}</span>
             </DashBoardItem>
           </DashBoard>
           <Picker>
@@ -260,7 +251,7 @@ const Coin = () => {
           </Picker>
           <Routes>
             <Route path="/price" element={<Price />} />
-            <Route path="/chart" element={<Chart />} />
+            <Route path="/chart" element={<Chart coinId={coinId!} />} />
           </Routes>
         </>
       )}
