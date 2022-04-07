@@ -5,5 +5,10 @@ declare module "styled-components" {
     textColor: string;
     bgColor: string;
     accentColor: string;
+    cardColor: string;
+    positiveColor: string;
+    negativeColor: string;
+    buttonColor: string;
+    subTextColor: string;
   }
 }
