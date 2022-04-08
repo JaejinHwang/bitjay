@@ -10,5 +10,6 @@ declare module "styled-components" {
     negativeColor: string;
     buttonColor: string;
     subTextColor: string;
+    pickerColor: string;
   }
 }

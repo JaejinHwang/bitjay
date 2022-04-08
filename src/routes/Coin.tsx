@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 import { useQuery } from "react-query";
 import {
   Link,
@@ -8,10 +9,19 @@ import {
   useMatch,
   useParams,
 } from "react-router-dom";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
+import { isDarkAtom } from "../atoms";
 import { fetchCoinInfo, fetchCoinTickers } from "./api";
 import Chart from "./Chart";
 import Price from "./Price";
+
+const Background = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
 const Container = styled.div`
   width: 100%;
@@ -20,14 +30,17 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   max-width: 500px;
-  margin: 0px auto;
+  margin-bottom: 74px;
 `;
 
 const Title = styled.div`
   font-size: 40px;
+  line-height: 50px;
   font-weight: 500;
-  margin: 74px 0px;
-  width: 100%;
+  width: 350px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   text-align: left;
   color: ${(props) => props.theme.textColor};
 `;
@@ -87,7 +100,7 @@ const Picker = styled.div`
   justify-content: space-between;
   padding: 4px;
   border-radius: 8px;
-  background-color: ${(props) => props.theme.cardColor};
+  background-color: ${(props) => props.theme.pickerColor};
 `;
 
 const PickerItem = styled.div<{ isActive: boolean }>`
@@ -103,6 +116,42 @@ const PickerItem = styled.div<{ isActive: boolean }>`
   a {
     display: block;
   }
+`;
+
+const Header = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  margin-bottom: 74px;
+  margin-top: 37px;
+`;
+
+const Backbutton = styled.div`
+  font-size: 17px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+  color: ${(props) => props.theme.subTextColor};
+`;
+
+const FunctionBar = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const DarkModeButton = styled.div`
+  width: 50px;
+  font-size: 20px;
+  height: 50px;
+  background: ${(props) => props.theme.cardColor};
+  border: 1px solid ${(props) => props.theme.subTextColor};
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 interface IState {
@@ -170,92 +219,137 @@ interface ICoinTickers {
 }
 
 const Coin = () => {
+  const isDarkAtomSetter = useSetRecoilState(isDarkAtom);
+  const isDark = useRecoilValue(isDarkAtom);
+  const modeToggleFuction = () => isDarkAtomSetter((prev) => !prev);
   const location = useLocation();
   const { coinId } = useParams();
   const state = location.state as IState;
   const priceMatch = useMatch("/:coinId/price");
   const chartMatch = useMatch("/:coinId/chart");
-  const {isLoading: infoLoading, data: infoData} = useQuery<ICoinInfo>([coinId, "info"], ()=>fetchCoinInfo(coinId!));
-  const {isLoading: tickersLoading, data: tickersData} = useQuery<ICoinTickers>([coinId, "tickers"], ()=>fetchCoinTickers(coinId!));
+  const { isLoading: tickersLoading, data: tickersData } =
+    useQuery<ICoinTickers>(
+      [coinId, "tickers"],
+      () => fetchCoinTickers(coinId!),
+      { refetchInterval: 1000 }
+    );
+  const { isLoading: infoLoading, data: infoData } = useQuery<ICoinInfo>(
+    [coinId, "info"],
+    () => fetchCoinInfo(coinId!)
+  );
   const loading = infoLoading || tickersLoading;
   return (
-    <Container>
-      <Title>
-        {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
-      </Title>
-      {loading ? (
-        "Loading..."
-      ) : (
-        <>
-          <DashBoard>
-            <DashBoardItem>
-              <span>RANK</span>
-              <span>{infoData?.rank}</span>
-            </DashBoardItem>
-            <DashBoardItem>
-              <span>SYMBOL</span>
-              <span>{infoData?.symbol}</span>
-            </DashBoardItem>
-            <DashBoardItem
-              positive={infoData?.is_active === true}
-              negative={infoData?.is_active !== true}
-            >
-              <span>STATUS</span>
-              <span>{infoData?.is_active ? "ACTIVE" : "INACTIVE"}</span>
-            </DashBoardItem>
-            <DashBoardItem>
-              <span>SINCE</span>
-              <span>
-                {infoData?.started_at ? (
-                  <>
-                    {infoData?.started_at?.split("-")[0]}.
-                    {infoData?.started_at?.split("-")[1]}.
-                  </>
-                ) : (
-                  "UKN"
-                )}
-              </span>
-            </DashBoardItem>
-          </DashBoard>
-          <Description>
-            <DashBoardItem>
-              <span>DESCRIPTION</span>
-              <span>
-                {infoData?.description
-                  ? infoData?.description
-                  : "There is no description about this coin."}
-              </span>
-            </DashBoardItem>
-          </Description>
-          <DashBoard>
-            <DashBoardItem>
-              <span>TOTAL SUPPLY</span>
-              <span>{tickersData?.total_supply}</span>
-            </DashBoardItem>
-            {/* <DashBoardItem>
+    <Background>
+      <Container>
+        <Helmet>
+          <title>
+            {state?.name
+              ? state.name
+              : loading
+              ? "Loading..."
+              : `${infoData?.name} - $${tickersData?.quotes.USD.price.toFixed(
+                  2
+                )}`}
+          </title>
+        </Helmet>
+        <Header>
+          <Link to="/">
+            <Backbutton>
+              <i className="ri-arrow-left-s-line ri-xl"></i>
+              Back
+            </Backbutton>
+          </Link>
+          <FunctionBar>
+            <Title>
+              {state?.name
+                ? state.name
+                : loading
+                ? "Loading..."
+                : infoData?.name}
+            </Title>
+            <DarkModeButton onClick={modeToggleFuction}>
+              {isDark ? (
+                <i className="ri-moon-fill ri-1x"></i>
+              ) : (
+                <i className="ri-sun-fill ri-1x"></i>
+              )}
+            </DarkModeButton>
+          </FunctionBar>
+        </Header>
+        {loading ? (
+          "Loading..."
+        ) : (
+          <>
+            <DashBoard>
+              <DashBoardItem>
+                <span>RANK</span>
+                <span>{infoData?.rank}</span>
+              </DashBoardItem>
+              <DashBoardItem>
+                <span>SYMBOL</span>
+                <span>{infoData?.symbol}</span>
+              </DashBoardItem>
+              <DashBoardItem
+                positive={infoData?.is_active === true}
+                negative={infoData?.is_active !== true}
+              >
+                <span>STATUS</span>
+                <span>{infoData?.is_active ? "ACTIVE" : "INACTIVE"}</span>
+              </DashBoardItem>
+              <DashBoardItem>
+                <span>SINCE</span>
+                <span>
+                  {infoData?.started_at ? (
+                    <>
+                      {infoData?.started_at?.split("-")[0]}.
+                      {infoData?.started_at?.split("-")[1]}.
+                    </>
+                  ) : (
+                    "UKN"
+                  )}
+                </span>
+              </DashBoardItem>
+            </DashBoard>
+            <Description>
+              <DashBoardItem>
+                <span>DESCRIPTION</span>
+                <span>
+                  {infoData?.description
+                    ? infoData?.description
+                    : "There is no description about this coin."}
+                </span>
+              </DashBoardItem>
+            </Description>
+            <DashBoard>
+              <DashBoardItem>
+                <span>TOTAL SUPPLY</span>
+                <span>{tickersData?.total_supply}</span>
+              </DashBoardItem>
+              {/* <DashBoardItem>
               <span>MAX SUPPLY</span>
               <span>{tickersData?.max_supply}</span>
             </DashBoardItem> */}
-            <DashBoardItem>
-              <span>CIRCULATING</span>
-              <span>{tickersData?.circulating_supply}</span>
-            </DashBoardItem>
-          </DashBoard>
-          <Picker>
-            <PickerItem isActive={chartMatch !== null}>
-              <Link to={`/${coinId}/chart`}>Chart</Link>
-            </PickerItem>
-            <PickerItem isActive={priceMatch !== null}>
-              <Link to={`/${coinId}/price`}>Price</Link>
-            </PickerItem>
-          </Picker>
-          <Routes>
-            <Route path="/price" element={<Price />} />
-            <Route path="/chart" element={<Chart coinId={coinId!} />} />
-          </Routes>
-        </>
-      )}
-    </Container>
+              <DashBoardItem>
+                <span>CIRCULATING</span>
+                <span>{tickersData?.circulating_supply}</span>
+              </DashBoardItem>
+            </DashBoard>
+            <Picker>
+              <PickerItem isActive={priceMatch !== null}>
+                <Link to={`/${coinId}/price`}>Price</Link>
+              </PickerItem>
+              <PickerItem isActive={chartMatch !== null}>
+                <Link to={`/${coinId}/chart`}>Chart</Link>
+              </PickerItem>
+            </Picker>
+            <Routes>
+              <Route path="/price" element={<Price coinId={coinId!} />} />
+              <Route path="/chart" element={<Chart coinId={coinId!} />} />
+            </Routes>
+          </>
+        )}
+      </Container>
+    </Background>
   );
 };
 
