@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/bitjay.git/static/css/main.57ac200c.css",
-    "main.js": "/bitjay.git/static/js/main.61f38150.js",
-    "static/js/787.3e3b19a5.chunk.js": "/bitjay.git/static/js/787.3e3b19a5.chunk.js",
-    "static/media/remixicon.svg?t=1590207869815": "/bitjay.git/static/media/remixicon.9cedd2150922ead84869.svg",
-    "static/media/remixicon.eot?t=1590207869815": "/bitjay.git/static/media/remixicon.5cb99e6cba5a4619063f.eot",
-    "static/media/remixicon.ttf?t=1590207869815": "/bitjay.git/static/media/remixicon.f2616f597cf98f38d234.ttf",
-    "static/media/remixicon.woff?t=1590207869815": "/bitjay.git/static/media/remixicon.8d09fa11700ed63cf96e.woff",
-    "static/media/remixicon.woff2?t=1590207869815": "/bitjay.git/static/media/remixicon.90668f6f9b3c2c18a090.woff2",
-    "index.html": "/bitjay.git/index.html",
-    "main.57ac200c.css.map": "/bitjay.git/static/css/main.57ac200c.css.map",
-    "main.61f38150.js.map": "/bitjay.git/static/js/main.61f38150.js.map",
-    "787.3e3b19a5.chunk.js.map": "/bitjay.git/static/js/787.3e3b19a5.chunk.js.map"
+    "main.css": "/bitjay/static/css/main.aebfbd9d.css",
+    "main.js": "/bitjay/static/js/main.6fbc4fe5.js",
+    "static/js/787.3e3b19a5.chunk.js": "/bitjay/static/js/787.3e3b19a5.chunk.js",
+    "static/media/remixicon.svg?t=1590207869815": "/bitjay/static/media/remixicon.9cedd2150922ead84869.svg",
+    "static/media/remixicon.eot?t=1590207869815": "/bitjay/static/media/remixicon.5cb99e6cba5a4619063f.eot",
+    "static/media/remixicon.ttf?t=1590207869815": "/bitjay/static/media/remixicon.f2616f597cf98f38d234.ttf",
+    "static/media/remixicon.woff?t=1590207869815": "/bitjay/static/media/remixicon.8d09fa11700ed63cf96e.woff",
+    "static/media/remixicon.woff2?t=1590207869815": "/bitjay/static/media/remixicon.90668f6f9b3c2c18a090.woff2",
+    "index.html": "/bitjay/index.html",
+    "main.aebfbd9d.css.map": "/bitjay/static/css/main.aebfbd9d.css.map",
+    "main.6fbc4fe5.js.map": "/bitjay/static/js/main.6fbc4fe5.js.map",
+    "787.3e3b19a5.chunk.js.map": "/bitjay/static/js/787.3e3b19a5.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.57ac200c.css",
-    "static/js/main.61f38150.js"
+    "static/css/main.aebfbd9d.css",
+    "static/js/main.6fbc4fe5.js"
   ]
 }
