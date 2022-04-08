@@ -110,6 +110,9 @@ const Chart = ({ coinId }: IChartProps) => {
                 },
               ]}
               options={{
+                theme: {
+                  mode: isDark ? "dark" : "light",
+                },
                 stroke: {
                   show: true,
                   width: 3,
