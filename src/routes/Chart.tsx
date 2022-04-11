@@ -5,8 +5,6 @@ import styled from "styled-components";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { isCandleAtom, isDarkAtom } from "../atoms";
 
-const ChartContainer = styled.div``;
-
 const DashBoardItem = styled.div<{
   positive?: boolean;
   negative?: boolean;

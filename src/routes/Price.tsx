@@ -1,6 +1,6 @@
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import { fetchCoinTickers, fetchCoinHistoricalPrice } from "./api";
+import { fetchCoinTickers } from "./api";
 
 const DashBoard = styled.div`
   width: 100%;
